@@ -19,12 +19,17 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PORT=8000 \
-    HOST=0.0.0.0
+    HOST=0.0.0.0 \
+    MALLOC_TRIM_THRESHOLD_=100000
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# 1. Install ultra-lightweight CPU-ONLY PyTorch first!
+# This avoids downloading 5GB+ of NVIDIA CUDA / cuDNN wheels and stays well within Render's 512MB RAM limit.
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+
+# 2. Install remaining Python dependencies
 COPY backend/requirements.txt ./backend/
 RUN pip install --no-cache-dir -r ./backend/requirements.txt
 

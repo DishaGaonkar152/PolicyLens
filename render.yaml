@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: policylens-rag
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/documents
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
